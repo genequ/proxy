@@ -12,7 +12,7 @@
 
 [Rule]
 # ☁️ iCloud
-DOMAIN,gateway.icloud.com,🇺🇸美国
+DOMAIN,gateway.icloud.com,US
 
 [Script]
 http-request ^https?:\/\/news(-todayconfig)?-edge\.apple\.com\/v1\/configs script-path=https://github.com/NSRingo/News/releases/download/v3.1.5/request.bundle.js, requires-body=true, tag=📰 News.v1.configs.request, argument=CountryCode=US&NewsPlusUser=true
