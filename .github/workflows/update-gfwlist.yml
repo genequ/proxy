@@ -32,8 +32,11 @@ jobs:
         cat gfwlist_domains.json
 
     - name: Commit and push gfwlist_domains.json
-      uses: stefanzweifel/git-auto-commit-action@v4
-      with:
-        commit_message: 'Update gfwlist_domains.json'
-        file_pattern: 'gfwlist_domains.json'
-        branch: main  # 或你想要的分支
+      env:
+        GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}  # 使用你在 secrets 中配置的 PAT
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add gfwlist_domains.json
+        git commit -m "Update gfwlist_domains.json"
+        git push https://github.com/${{ github.repository }}.git HEAD:main
