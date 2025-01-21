@@ -17,7 +17,8 @@ function FindProxyForURL(url, host) {
         "github.com",
         "x.com",
         "ytimg.com",
-        "googleapis.com"
+        "googleapis.com",
+        "githubusercontent.com"
     ];
 
     for (var i = 0; i < proxySites.length; i++) {
