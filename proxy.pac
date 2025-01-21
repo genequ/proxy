@@ -8,7 +8,6 @@ function FindProxyForURL(url, host) {
 
     var companyProxy = "PROXY eglbeprx001.esko-graphics.com:8080";
 
-
     var proxySites = [
         "google.com",
         "youtube.com",
