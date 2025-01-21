@@ -14,7 +14,8 @@ function FindProxyForURL(url, host) {
         "twitter.com",
         "openai.com",
         "chatgpt.com",
-        "github.com"
+        "github.com",
+        "x.com"
     ];
 
     for (var i = 0; i < proxySites.length; i++) {
