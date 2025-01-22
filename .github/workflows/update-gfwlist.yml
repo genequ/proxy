@@ -20,16 +20,35 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Download GFWList and decode
+    - name: Download and process GFWList
       run: |
-        # 下载 GFWList
+        # Download gfwlist.txt
         curl -O https://raw.githubusercontent.com/gfwlist/gfwlist/master/gfwlist.txt
-        # 解码 GFWList
+        if [ ! -s gfwlist.txt ]; then
+          echo "Error: gfwlist.txt is empty or failed to download"
+          exit 1
+        fi
+
+        # Decode Base64
         base64 --decode gfwlist.txt > gfwlist_decoded.txt
-        # 提取域名并生成 JSON 文件
+        if [ ! -s gfwlist_decoded.txt ]; then
+          echo "Error: Decoded file is empty"
+          exit 1
+        fi
+
+        # Parse domains
         awk -F '||' '{ if ($2 != "") print $2 }' gfwlist_decoded.txt | sed 's/^\*\./\./g' | sed 's/^/"/;s/$/"/' > gfwlist_domains.json
-        # 打印检查
-        cat gfwlist_domains.json
+        if [ ! -s gfwlist_domains.json ]; then
+          echo "Error: gfwlist_domains.json is empty"
+          exit 1
+        fi
+
+        # Debug: Print the first few lines of each file
+        echo "First few lines of gfwlist_decoded.txt:"
+        head gfwlist_decoded.txt
+
+        echo "First few lines of gfwlist_domains.json:"
+        head gfwlist_domains.json
 
     - name: Commit and push gfwlist_domains.json
       env:
