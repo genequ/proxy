@@ -2,15 +2,8 @@ name: Update GFWList Domains
 
 on:
   schedule:
-    # 每天定时运行一次（你可以根据需要调整时间）
-    - cron: '0 0 * * *'  # 每天 UTC 时间 00:00 执行一次
+    - cron: '0 0 * * *'
   workflow_dispatch:
-    # 支持手动触发
-    inputs:
-      trigger:
-        description: 'Trigger GFWList update manually'
-        required: true
-        default: 'true'
 
 jobs:
   update_gfwlist:
@@ -29,30 +22,32 @@ jobs:
           exit 1
         fi
 
+        echo "First few lines of gfwlist.txt:"
+        head -n 10 gfwlist.txt
+
         # Decode Base64
-        base64 -d gfwlist.txt > gfwlist_decoded.txt
+        base64 -d gfwlist.txt > gfwlist_decoded.txt || python3 -c "import base64; print(base64.b64decode(open('gfwlist.txt', 'rb').read()).decode('utf-8'))" > gfwlist_decoded.txt
         if [ ! -s gfwlist_decoded.txt ]; then
           echo "Error: Decoded file is empty"
           exit 1
         fi
 
+        echo "First few lines of gfwlist_decoded.txt:"
+        head -n 20 gfwlist_decoded.txt
+
         # Parse domains
-        awk -F '||' '{ if ($2 != "") print $2 }' gfwlist_decoded.txt | sed 's/^\*\./\./g' | sed 's/^/"/;s/$/"/' > gfwlist_domains.json
+        grep -oE "([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}" gfwlist_decoded.txt | sed 's/^/"/;s/$/"/' > gfwlist_domains.json
         if [ ! -s gfwlist_domains.json ]; then
           echo "Error: gfwlist_domains.json is empty"
           exit 1
         fi
 
-        # Debug: Print the first few lines of each file
-        echo "First few lines of gfwlist_decoded.txt:"
-        head gfwlist_decoded.txt
-
-        echo "First few lines of gfwlist_domains.json:"
-        head gfwlist_domains.json
+        echo "Extracted domains (first 20 lines):"
+        head -n 20 gfwlist_domains.json
 
     - name: Commit and push gfwlist_domains.json
       env:
-        GITHUB_TOKEN: ${{ secrets.ACTIONS_TOKEN }}  # 使用你在 secrets 中配置的 PAT
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
