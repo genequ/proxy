@@ -30,7 +30,7 @@ jobs:
         fi
 
         # Decode Base64
-        base64 --decode gfwlist.txt > gfwlist_decoded.txt
+        base64 -d gfwlist.txt > gfwlist_decoded.txt
         if [ ! -s gfwlist_decoded.txt ]; then
           echo "Error: Decoded file is empty"
           exit 1
